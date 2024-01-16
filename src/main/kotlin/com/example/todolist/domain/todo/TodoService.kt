@@ -2,9 +2,12 @@ package com.example.todolist.domain.todo
 
 import com.example.todolist.domain.todo.dto.CreateTodoArgument
 import com.example.todolist.domain.todo.dto.TodoDto
+import com.example.todolist.domain.todo.dto.UpdateTodoArgument
 
 interface TodoService {
     fun getTodoList(): List<TodoDto>
     fun getTodo(todoId: Long): TodoDto
     fun createTodo(request: CreateTodoArgument): TodoDto
+    fun updateTodo(request: UpdateTodoArgument): TodoDto
+    fun deleteTodo(todoId: Long)
 }

@@ -2,6 +2,8 @@ package com.example.todolist.domain.todo
 
 import com.example.todolist.domain.todo.dto.CreateTodoArgument
 import com.example.todolist.domain.todo.dto.TodoDto
+import com.example.todolist.domain.todo.dto.UpdateTodoArgument
+import com.example.todolist.domain.todo.exception.ModelNotFoundException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -14,7 +16,7 @@ class TodoServiceImpl(
     }
 
     override fun getTodo(todoId: Long): TodoDto {
-        val todo = todoJpaRepository.findByIdOrNull(todoId) ?: throw Exception("not found todoId")
+        val todo = todoJpaRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo", todoId)
 
         return TodoDto.from(todo)
     }
@@ -28,5 +30,23 @@ class TodoServiceImpl(
                 )
         )
         return TodoDto.from(todo)
+    }
+
+    override fun updateTodo(request: UpdateTodoArgument): TodoDto {
+        val foundTodo = request.id?.let {
+            todoJpaRepository.findByIdOrNull(it)
+        } ?: throw ModelNotFoundException("Todo", request.id)
+
+        foundTodo.changeTitleAndContent(request.title, request.content)
+        todoJpaRepository.save(foundTodo)
+
+        return TodoDto.from(foundTodo)
+
+    }
+
+    override fun deleteTodo(todoId: Long) {
+        val foundTodo = todoJpaRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo", todoId)
+
+        todoJpaRepository.delete(foundTodo)
     }
 }

@@ -11,14 +11,17 @@ class Todo (
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long? = null,
         @Column
-        val title: String,
+        var title: String,
         @Column
         val username: String,
         @Column
-        val content: String,
+        var content: String,
         @CreationTimestamp
         @Column
         val createdAt: ZonedDateTime = ZonedDateTime.now()
 ){
-
+        fun changeTitleAndContent(title: String, content: String){
+                this.title = title
+                this.content = content
+        }
 }

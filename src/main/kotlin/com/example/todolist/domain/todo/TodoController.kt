@@ -2,11 +2,15 @@ package com.example.todolist.domain.todo
 
 import com.example.todolist.domain.todo.dto.CreateTodoArgument
 import com.example.todolist.domain.todo.dto.TodoDto
+import com.example.todolist.domain.todo.dto.UpdateTodoArgument
+import jakarta.validation.constraints.Null
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -41,5 +45,32 @@ class TodoController(
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(todoService.createTodo(request))
+    }
+
+    @PutMapping("/{todoId}")
+    fun updateTodo(
+            @PathVariable todoId: Long,
+            @RequestBody updateTodoArgument: UpdateTodoArgument
+            ): ResponseEntity<TodoDto>{
+        val request = UpdateTodoArgument(
+                id = todoId,
+                title = updateTodoArgument.title,
+                content = updateTodoArgument.content
+        )
+
+        val todo: TodoDto = todoService.updateTodo(request)
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(todo)
+    }
+
+    @DeleteMapping("/{todoId}")
+    fun deleteTodo(@PathVariable todoId: Long): ResponseEntity<Unit>{
+        todoService.deleteTodo(todoId)
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(null)
     }
 }
