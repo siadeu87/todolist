@@ -1,5 +1,6 @@
 package com.example.todolist.domain.todo
 
+import com.example.todolist.domain.comment.dto.Comment
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.ZonedDateTime
@@ -18,7 +19,9 @@ class Todo (
         var content: String,
         @CreationTimestamp
         @Column
-        val createdAt: ZonedDateTime = ZonedDateTime.now()
+        val createdAt: ZonedDateTime = ZonedDateTime.now(),
+        @OneToMany(mappedBy = "todo", cascade = [CascadeType.ALL], orphanRemoval = true)
+        var comment : List<Comment> = emptyList()
 ){
         fun changeTitleAndContent(title: String, content: String){
                 this.title = title
