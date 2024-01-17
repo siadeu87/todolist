@@ -1,5 +1,6 @@
 package com.example.todolist.domain.todo
 
+import com.example.todolist.domain.todo.dto.CommentTodoDto
 import com.example.todolist.domain.todo.dto.CreateTodoArgument
 import com.example.todolist.domain.todo.dto.TodoDto
 import com.example.todolist.domain.todo.dto.UpdateTodoArgument
@@ -30,10 +31,11 @@ class TodoController(
     }
 
     @GetMapping("/{todoId}")
-    fun getTodo(@PathVariable todoId: Long): ResponseEntity<TodoDto>{
+    fun getTodo(@PathVariable todoId: Long): ResponseEntity<CommentTodoDto?>{
+        val todo = todoService.getTodo(todoId)
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(todoService.getTodo(todoId))
+                .body(todo)
     }
 
     @PostMapping

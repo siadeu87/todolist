@@ -1,5 +1,6 @@
 package com.example.todolist.domain.todo
 
+import com.example.todolist.domain.todo.dto.CommentTodoDto
 import com.example.todolist.domain.todo.dto.CreateTodoArgument
 import com.example.todolist.domain.todo.dto.TodoDto
 import com.example.todolist.domain.todo.dto.UpdateTodoArgument
@@ -15,10 +16,10 @@ class TodoServiceImpl(
         return todoJpaRepository.findAll().map { TodoDto.from(it) }
     }
 
-    override fun getTodo(todoId: Long): TodoDto {
+    override fun getTodo(todoId: Long): CommentTodoDto? {
         val todo = todoJpaRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo", todoId)
 
-        return TodoDto.from(todo)
+        return todo.let { CommentTodoDto.from(it) }
     }
 
     override fun createTodo(request: CreateTodoArgument): TodoDto {
