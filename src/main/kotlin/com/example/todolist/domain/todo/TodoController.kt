@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -64,6 +65,16 @@ class TodoController(
                 .status(HttpStatus.OK)
                 .body(todo)
     }
+
+    @PatchMapping("/{todoId}/complete")
+    fun completeTodo(@PathVariable todoId: Long): ResponseEntity<Unit>{
+        todoService.completeTodo(todoId)
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(null)
+    }
+
 
     @DeleteMapping("/{todoId}")
     fun deleteTodo(@PathVariable todoId: Long): ResponseEntity<Unit>{

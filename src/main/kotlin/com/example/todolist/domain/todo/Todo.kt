@@ -27,4 +27,14 @@ class Todo (
                 this.title = title
                 this.content = content
         }
+
+        @Column(name = "is_completed")
+        private var _isCompleted: Boolean = false
+
+        val isCompleted: Boolean
+                get() = _isCompleted
+
+        fun complete() {
+                _isCompleted = true
+        }
 }

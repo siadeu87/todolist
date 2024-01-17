@@ -44,6 +44,15 @@ class TodoServiceImpl(
 
     }
 
+    override fun completeTodo(todoId: Long) {
+        val targetTodo = todoJpaRepository.findByIdOrNull(todoId)?: throw ModelNotFoundException("Todo", todoId)
+
+        targetTodo.let {
+            it.complete()
+            todoJpaRepository.save(it)
+        }
+    }
+
     override fun deleteTodo(todoId: Long) {
         val foundTodo = todoJpaRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo", todoId)
 

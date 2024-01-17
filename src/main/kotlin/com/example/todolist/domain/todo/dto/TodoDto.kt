@@ -8,6 +8,7 @@ data class TodoDto(
         val title: String,
         val username: String,
         val content: String,
+        val iscomplete: Boolean,
         val createdAt: ZonedDateTime
 ){
     companion object{
@@ -17,6 +18,7 @@ data class TodoDto(
                     username = todo.username,
                     title = todo.title,
                     content = todo.content,
+                    iscomplete = todo.isCompleted,
                     createdAt = todo.createdAt
             )
 
