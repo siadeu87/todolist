@@ -1,4 +1,4 @@
-package com.example.todolist.domain.comment.dto
+package com.example.todolist.domain.comment
 
 import com.example.todolist.domain.todo.Todo
 import jakarta.persistence.*
@@ -14,12 +14,14 @@ class Comment(
         @Column
         val username: String,
         @Column
-        val content: String,
+        var content: String,
         @CreationTimestamp
         @Column
         val createdAt: ZonedDateTime = ZonedDateTime.now(),
         @ManyToOne
         val todo: Todo
 ){
-
+        fun changeContent(content: String){
+                this.content = content
+        }
 }

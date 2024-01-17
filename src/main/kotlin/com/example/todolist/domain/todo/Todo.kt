@@ -1,6 +1,6 @@
 package com.example.todolist.domain.todo
 
-import com.example.todolist.domain.comment.dto.Comment
+import com.example.todolist.domain.comment.Comment
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.ZonedDateTime

@@ -1,5 +1,6 @@
 package com.example.todolist.domain.comment.dto
 
+import com.example.todolist.domain.comment.Comment
 import java.time.ZonedDateTime
 
 data class CommentDto(
