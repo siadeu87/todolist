@@ -18,7 +18,7 @@ class JwtPlugin(
         @Value("\${auth.jwt.accessTokenExpirationHour}") private val accessTokenExpirationHour: Long,
 ) {
 
-    fun validateTaken(jwt: String): Result<Jws<Claims>>{
+    fun validateToken(jwt: String): Result<Jws<Claims>>{
         return kotlin.runCatching {
             val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
             Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt)
