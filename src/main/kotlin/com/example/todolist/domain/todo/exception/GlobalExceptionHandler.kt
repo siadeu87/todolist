@@ -14,4 +14,18 @@ class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(ErrorDto(message = e.message))
     }
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleIllegalStateException(e: IllegalStateException): ResponseEntity<ErrorDto> {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorDto(message = e.message))
+    }
+
+    @ExceptionHandler(InvalidCredentialException::class)
+    fun handleInvalidCredentialException(e: InvalidCredentialException): ResponseEntity<ErrorDto> {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorDto(e.message))
+    }
 }
