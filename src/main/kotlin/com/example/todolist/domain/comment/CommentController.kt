@@ -1,10 +1,13 @@
 package com.example.todolist.domain.comment
 
 import com.example.todolist.domain.comment.dto.CommentDto
+import com.example.todolist.domain.comment.dto.DeleteCommentArgument
 import com.example.todolist.domain.comment.dto.UpdateCommentArgument
 import com.example.todolist.domain.comment.dto.WriteCommentArgument
+import com.example.todolist.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,12 +23,14 @@ class CommentController(
 ) {
     @PostMapping
     fun writeComment(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
             @PathVariable todoId: Long,
             @RequestBody writeCommentArgument: WriteCommentArgument
     ): ResponseEntity<CommentDto>{
         val request = WriteCommentArgument(
+                content = writeCommentArgument.content,
+                userId = userPrincipal.id,
                 username = writeCommentArgument.username,
-                content = writeCommentArgument.content
         )
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(commentService.writeComment(todoId, request))
@@ -33,13 +38,15 @@ class CommentController(
 
     @PutMapping("/{commentId}")
     fun updateComment(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
             @PathVariable todoId: Long,
             @PathVariable commentId: Long,
             @RequestBody updateCommentArgument: UpdateCommentArgument
     ): ResponseEntity<CommentDto>{
         val arguments = UpdateCommentArgument(
                 id = commentId,
-                content = updateCommentArgument.content
+                content = updateCommentArgument.content,
+                userId = userPrincipal.id
         )
         val comment = commentService.updateComment(todoId, arguments)
 
@@ -50,10 +57,15 @@ class CommentController(
 
     @DeleteMapping("/{commentId}")
     fun deleteComment(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
             @PathVariable todoId: Long,
             @PathVariable commentId: Long
     ): ResponseEntity<Unit>{
-        commentService.deleteComment(todoId, commentId)
+        val request = DeleteCommentArgument(
+                id = commentId,
+                userId = userPrincipal.id
+        )
+        commentService.deleteComment(todoId, request)
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build()

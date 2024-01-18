@@ -13,7 +13,7 @@ data class CommentDto(
         fun from(comment: Comment): CommentDto{
             return CommentDto(
                     id = comment.id,
-                    username = comment.username,
+                    username = comment.user.nickname,
                     content = comment.content,
                     createdAt = comment.createdAt
             )

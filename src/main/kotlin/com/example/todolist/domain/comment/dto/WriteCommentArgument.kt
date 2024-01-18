@@ -1,6 +1,7 @@
 package com.example.todolist.domain.comment.dto
 
 data class WriteCommentArgument(
+        val content: String,
         val username: String,
-        val content: String
+        val userId: Long?
 )
