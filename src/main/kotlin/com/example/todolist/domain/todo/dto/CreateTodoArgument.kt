@@ -1,7 +1,8 @@
 package com.example.todolist.domain.todo.dto
 
 data class CreateTodoArgument(
-        val username: String,
         val title: String,
-        val content: String
+        val content: String,
+        val userId: Long?,
+        val username: String,
 )

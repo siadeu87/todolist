@@ -15,7 +15,7 @@ data class TodoDto(
         fun from(todo: Todo): TodoDto{
             return TodoDto(
                     id = todo.id!!,
-                    username = todo.username,
+                    username = todo.user.nickname,
                     title = todo.title,
                     content = todo.content,
                     isComplete = todo.isCompleted,

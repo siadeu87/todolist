@@ -1,16 +1,16 @@
 package com.example.todolist.domain.todo
 
-import com.example.todolist.domain.todo.dto.CommentTodoDto
-import com.example.todolist.domain.todo.dto.CreateTodoArgument
-import com.example.todolist.domain.todo.dto.TodoDto
-import com.example.todolist.domain.todo.dto.UpdateTodoArgument
+import com.example.todolist.domain.todo.dto.*
+import com.example.todolist.domain.todo.exception.ForbiddenException
 import com.example.todolist.domain.todo.exception.ModelNotFoundException
+import com.example.todolist.domain.user.UserJpaRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
 class TodoServiceImpl(
-    private val todoJpaRepository: TodoJpaRepository
+    private val todoJpaRepository: TodoJpaRepository,
+    private val userJpaRepository: UserJpaRepository
 ): TodoService {
     override fun getTodoList(): List<TodoDto> {
         return todoJpaRepository.findAll().map { TodoDto.from(it) }
@@ -23,11 +23,15 @@ class TodoServiceImpl(
     }
 
     override fun createTodo(request: CreateTodoArgument): TodoDto {
+        val user = request.userId?.let {
+            userJpaRepository.findByIdOrNull(it)
+        }?: throw ModelNotFoundException("User", request.userId)
         val todo = todoJpaRepository.save(
                 Todo(
-                        username = request.username,
                         title = request.title,
-                        content = request.content
+                        content = request.content,
+                        user = user,
+                        username = user.nickname,
                 )
         )
         return TodoDto.from(todo)
@@ -37,6 +41,9 @@ class TodoServiceImpl(
         val foundTodo = request.id?.let {
             todoJpaRepository.findByIdOrNull(it)
         } ?: throw ModelNotFoundException("Todo", request.id)
+        if(!foundTodo.compareUserIdWith(request.userId!!)){
+            throw ForbiddenException(request.userId,"USer",request.id)
+        }
 
         foundTodo.changeTitleAndContent(request.title, request.content)
         todoJpaRepository.save(foundTodo)
@@ -45,8 +52,13 @@ class TodoServiceImpl(
 
     }
 
-    override fun completeTodo(todoId: Long) {
-        val targetTodo = todoJpaRepository.findByIdOrNull(todoId)?: throw ModelNotFoundException("Todo", todoId)
+    override fun completeTodo(request: CheckUserArgument) {
+        val targetTodo = request.id?.let {
+            todoJpaRepository.findByIdOrNull(it)
+        } ?: throw ModelNotFoundException("Todo", request.id)
+        if(!targetTodo.compareUserIdWith(request.userId!!)){
+            throw ForbiddenException(request.userId,"USer",request.id)
+        }
 
         targetTodo.let {
             it.complete()
@@ -54,8 +66,14 @@ class TodoServiceImpl(
         }
     }
 
-    override fun deleteTodo(todoId: Long) {
-        val foundTodo = todoJpaRepository.findByIdOrNull(todoId) ?: throw ModelNotFoundException("Todo", todoId)
+    override fun deleteTodo(request: CheckUserArgument) {
+        val foundTodo = request.id?.let {
+            todoJpaRepository.findByIdOrNull(it)
+        } ?: throw ModelNotFoundException("Todo", request.id)
+
+        if(!foundTodo.compareUserIdWith(request.userId!!)){
+            throw ForbiddenException(request.userId,"USer",request.id)
+        }
 
         todoJpaRepository.delete(foundTodo)
     }

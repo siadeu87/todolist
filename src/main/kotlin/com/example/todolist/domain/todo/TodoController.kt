@@ -1,12 +1,11 @@
 package com.example.todolist.domain.todo
 
-import com.example.todolist.domain.todo.dto.CommentTodoDto
-import com.example.todolist.domain.todo.dto.CreateTodoArgument
-import com.example.todolist.domain.todo.dto.TodoDto
-import com.example.todolist.domain.todo.dto.UpdateTodoArgument
+import com.example.todolist.domain.todo.dto.*
+import com.example.todolist.infra.security.UserPrincipal
 import jakarta.validation.constraints.Null
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -39,11 +38,15 @@ class TodoController(
     }
 
     @PostMapping
-    fun createTodo(@RequestBody createTodoArgument: CreateTodoArgument): ResponseEntity<TodoDto>{
+    fun createTodo(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
+            @RequestBody createTodoArgument: CreateTodoArgument
+    ): ResponseEntity<TodoDto>{
         val request = CreateTodoArgument(
                 username = createTodoArgument.username,
                 title = createTodoArgument.title,
-                content = createTodoArgument.content
+                content = createTodoArgument.content,
+                userId = userPrincipal.id
         )
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -52,13 +55,15 @@ class TodoController(
 
     @PutMapping("/{todoId}")
     fun updateTodo(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
             @PathVariable todoId: Long,
             @RequestBody updateTodoArgument: UpdateTodoArgument
             ): ResponseEntity<TodoDto>{
         val request = UpdateTodoArgument(
                 id = todoId,
                 title = updateTodoArgument.title,
-                content = updateTodoArgument.content
+                content = updateTodoArgument.content,
+                userId = userPrincipal.id
         )
 
         val todo: TodoDto = todoService.updateTodo(request)
@@ -69,8 +74,15 @@ class TodoController(
     }
 
     @PatchMapping("/{todoId}/complete")
-    fun completeTodo(@PathVariable todoId: Long): ResponseEntity<Unit>{
-        todoService.completeTodo(todoId)
+    fun completeTodo(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
+            @PathVariable todoId: Long
+    ): ResponseEntity<Unit>{
+        val request = CheckUserArgument(
+                id = todoId,
+                userId = userPrincipal.id
+        )
+        todoService.completeTodo(request)
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -79,8 +91,15 @@ class TodoController(
 
 
     @DeleteMapping("/{todoId}")
-    fun deleteTodo(@PathVariable todoId: Long): ResponseEntity<Unit>{
-        todoService.deleteTodo(todoId)
+    fun deleteTodo(
+            @AuthenticationPrincipal userPrincipal: UserPrincipal,
+            @PathVariable todoId: Long
+    ): ResponseEntity<Unit>{
+        val request = CheckUserArgument(
+                id = todoId,
+                userId = userPrincipal.id
+        )
+        todoService.deleteTodo(request)
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)

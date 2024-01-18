@@ -18,7 +18,7 @@ data class CommentTodoDto(
         fun from(todo: Todo): CommentTodoDto {
             return CommentTodoDto(
                     id = todo.id!!,
-                    username = todo.username,
+                    username = todo.user.nickname,
                     title = todo.title,
                     content = todo.content,
                     isComplete = todo.isCompleted,

@@ -1,8 +1,6 @@
 package com.example.todolist.domain.todo.dto
 
-data class UpdateTodoArgument(
+data class CheckUserArgument(
         val id: Long?,
-        val title: String,
-        val content: String,
         val userId: Long?
 )

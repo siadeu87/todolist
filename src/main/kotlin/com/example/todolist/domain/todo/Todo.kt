@@ -1,6 +1,7 @@
 package com.example.todolist.domain.todo
 
 import com.example.todolist.domain.comment.Comment
+import com.example.todolist.domain.user.User
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.ZonedDateTime
@@ -20,12 +21,18 @@ class Todo (
         @CreationTimestamp
         @Column
         val createdAt: ZonedDateTime = ZonedDateTime.now(),
+        @ManyToOne
+        @JoinColumn(name = "user_id")
+        val user: User,
         @OneToMany(mappedBy = "todo", cascade = [CascadeType.ALL], orphanRemoval = true)
         var comment : List<Comment> = emptyList()
 ){
         fun changeTitleAndContent(title: String, content: String){
                 this.title = title
                 this.content = content
+        }
+        fun compareUserIdWith(userId: Long): Boolean{
+                return user.id == userId
         }
 
         @Column(name = "is_completed")
