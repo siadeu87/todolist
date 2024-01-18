@@ -6,13 +6,15 @@ import org.springframework.context.annotation.Configuration
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-        private val jwtAuthenticationFilter: JwtAuthenticationFilter
+        private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+        private val authenticationEntryPoint: AuthenticationEntryPoint
 ) {
 
     @Bean
@@ -31,6 +33,9 @@ class SecurityConfig(
                             .anyRequest().authenticated()
                 }
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+                .exceptionHandling {
+                    it.authenticationEntryPoint(authenticationEntryPoint)
+                }
                 .build()
     }
 }
